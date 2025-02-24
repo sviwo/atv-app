@@ -15,66 +15,125 @@ import 'package:dio_log/interceptor/dio_log_interceptor.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+// import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'archs/lw_arch.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+class TestInheritedWidget extends InheritedWidget {
+  const TestInheritedWidget({super.key, required this.child}) : super(child: child);
+
+  final Widget child;
+
+  static TestInheritedWidget? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TestInheritedWidget>();
+  }
+
+  @override
+  bool updateShouldNotify(TestInheritedWidget oldWidget) {
+    return true;
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  // sentry为性能与BUG监听库
-  await SentryFlutter.init((options) async {
-    options.dsn = '';
-    options.tracesSampleRate = 1.0;
-    options.environment = await AppConf.environment();
-    options.anrEnabled = true;
-  }, appRunner: () async {
-    // 网络日志配置
-    DioLogInterceptor.enablePrintLog = false;
 
-    var env = await AppConf.environment();
-    bool mixDevelop = await AppConf.mixDevelop();
-    var localLanguage = await AppConf.getLauguage();
+  // 网络日志配置
+  DioLogInterceptor.enablePrintLog = false;
 
-    // 初始化架构库
-    LWArch.init(
-      env: env,
-      token: (await AppConf.getHttpAuthorization()),
-      baseUrl: (await AppConf.baseUrl),
-      httpSuccessCodes: [
-        '1',
-        '200',
-      ],
+  var env = await AppConf.environment();
+  bool mixDevelop = await AppConf.mixDevelop();
+  var localLanguage = await AppConf.getLauguage();
+
+  // 初始化架构库
+  LWArch.init(
+    env: env,
+    token: (await AppConf.getHttpAuthorization()),
+    baseUrl: (await AppConf.baseUrl),
+    httpSuccessCodes: [
+      '1',
+      '200',
+    ],
+    mixDevelop: mixDevelop,
+  );
+
+  // 初始化谷歌地图
+  _initMap();
+
+  EasyLocalization.logger.printer = (object, {level, name, stackTrace}) {};
+  return runApp(EasyLocalization(
+    supportedLocales: const [
+      Locale('zh'), // 汉语
+      Locale('en'), // 英语
+      Locale('es'), // 西班牙语
+      Locale('fr'), // 法语
+    ],
+    path: 'resources/langs',
+    fallbackLocale: const Locale('zh'), //TODO: 这里要改成en
+    saveLocale: true, // 保存当前的local到本地
+    useOnlyLangCode: true, // 只用语言标签，不用区域标签
+    // assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
+    assetLoader: const RootBundleAssetLoader(),
+    useFallbackTranslations: true,
+    child: MyApp(
       mixDevelop: mixDevelop,
-    );
+      env: env,
+      localLanguage: localLanguage,
+    ),
+  ));
+  // // sentry为性能与BUG监听库
+  // await SentryFlutter.init((options) async {
+  //   options.dsn = '';
+  //   options.tracesSampleRate = 1.0;
+  //   options.environment = await AppConf.environment();
+  //   options.anrEnabled = true;
+  // }, appRunner: () async {
+  //   // 网络日志配置
+  //   DioLogInterceptor.enablePrintLog = false;
 
-    // 初始化谷歌地图
-    _initMap();
+  //   var env = await AppConf.environment();
+  //   bool mixDevelop = await AppConf.mixDevelop();
+  //   var localLanguage = await AppConf.getLauguage();
 
-    EasyLocalization.logger.printer = (object, {level, name, stackTrace}) {};
-    return runApp(EasyLocalization(
-      supportedLocales: const [
-        Locale('zh'), // 汉语
-        Locale('en'), // 英语
-        Locale('es'), // 西班牙语
-        Locale('fr'), // 法语
-      ],
-      path: 'resources/langs',
-      fallbackLocale: const Locale('zh'), //TODO: 这里要改成en
-      saveLocale: true, // 保存当前的local到本地
-      useOnlyLangCode: true, // 只用语言标签，不用区域标签
-      // assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
-      assetLoader: const RootBundleAssetLoader(),
-      useFallbackTranslations: true,
-      child: MyApp(
-        mixDevelop: mixDevelop,
-        env: env,
-        localLanguage: localLanguage,
-      ),
-    ));
-  });
+  //   // 初始化架构库
+  //   LWArch.init(
+  //     env: env,
+  //     token: (await AppConf.getHttpAuthorization()),
+  //     baseUrl: (await AppConf.baseUrl),
+  //     httpSuccessCodes: [
+  //       '1',
+  //       '200',
+  //     ],
+  //     mixDevelop: mixDevelop,
+  //   );
+
+  //   // 初始化谷歌地图
+  //   _initMap();
+
+  //   EasyLocalization.logger.printer = (object, {level, name, stackTrace}) {};
+  //   return runApp(EasyLocalization(
+  //     supportedLocales: const [
+  //       Locale('zh'), // 汉语
+  //       Locale('en'), // 英语
+  //       Locale('es'), // 西班牙语
+  //       Locale('fr'), // 法语
+  //     ],
+  //     path: 'resources/langs',
+  //     fallbackLocale: const Locale('zh'), //TODO: 这里要改成en
+  //     saveLocale: true, // 保存当前的local到本地
+  //     useOnlyLangCode: true, // 只用语言标签，不用区域标签
+  //     // assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
+  //     assetLoader: const RootBundleAssetLoader(),
+  //     useFallbackTranslations: true,
+  //     child: MyApp(
+  //       mixDevelop: mixDevelop,
+  //       env: env,
+  //       localLanguage: localLanguage,
+  //     ),
+  //   ));
+  // });
 }
 
 _initMap() {}
@@ -123,7 +182,7 @@ class MyApp extends BaseApp {
       debugShowCheckedModeBanner: false,
       navigatorObservers: [
         _MyNavigator(),
-        SentryNavigatorObserver(),
+        // SentryNavigatorObserver(),
       ],
       onGenerateRoute: RouteManager.instance.getRouteFactory(),
       color: Colors.white,

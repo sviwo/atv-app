@@ -26,6 +26,9 @@ class _RemoteControlPageState
   @override
   String? titleName() => LocaleKeys.remote_control.tr();
 
+  var _isForward = false;
+  var _isBackward = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -183,49 +186,63 @@ class _RemoteControlPageState
         SizedBox(
           height: 78.dp,
         ),
-        Center(
-            child: GestureDetector(
-          child: Image.asset(
-            AppIcons.imgRemoteControlForwad,
-            width: 266.dp,
-            height: 120.dp,
-          ),
-          onTap: () {
-            LogUtil.d('点击了向前');
-          },
-          onLongPress: () {
-            LogUtil.d('长按了向前');
-            //: 蓝牙控制向前
-            BlueToothUtil.getInstance().controllerForward();
-          },
-          onLongPressEnd: (details) {
-            LogUtil.d('onLongPressEnd');
-            BlueToothUtil.getInstance().controllerCardStop();
-          },
-        )),
+        Center(child: StatefulBuilder(builder: (context, forwardState) {
+          return GestureDetector(
+            child: Image.asset(
+              AppIcons.imgRemoteControlForwad,
+              width: 266.dp,
+              height: 120.dp,
+              color: _isForward ? Colors.white.withOpacity(0.5) : null,
+              colorBlendMode: BlendMode.dstIn,
+            ),
+            onLongPress: () {
+              LogUtil.d('长按了向前');
+              if (_isBackward) return;
+              //: 蓝牙控制向前
+              BlueToothUtil.getInstance().controllerForward();
+              forwardState(() {
+                _isForward = true;
+              });
+            },
+            onLongPressEnd: (details) {
+              LogUtil.d('onLongPressEnd');
+              BlueToothUtil.getInstance().controllerCardStop();
+              forwardState(() {
+                _isForward = false;
+              });
+            },
+          );
+        })),
         SizedBox(
           height: 25.dp,
         ),
-        Center(
-            child: GestureDetector(
-          child: (Image.asset(
-            AppIcons.imgRemoteControlBackward,
-            width: 266.dp,
-            height: 120.dp,
-          )),
-          onTap: () {
-            LogUtil.d('点击了向后');
-          },
-          onLongPress: () {
-            LogUtil.d('长按了向后');
-            //: 蓝牙控制向后
-            BlueToothUtil.getInstance().controllerBackwards();
-          },
-          onLongPressEnd: (details) {
-            LogUtil.d('onLongPressEnd');
-            BlueToothUtil.getInstance().controllerCardStop();
-          },
-        )),
+        Center(child: StatefulBuilder(builder: (context, backwardState) {
+          return GestureDetector(
+            child: Image.asset(
+              AppIcons.imgRemoteControlBackward,
+              width: 266.dp,
+              height: 120.dp,
+              color: _isBackward ? Colors.white.withOpacity(0.5) : null,
+              colorBlendMode: BlendMode.dstIn,
+            ),
+            onLongPress: () {
+              LogUtil.d('长按了向后');
+              //: 蓝牙控制向后
+              BlueToothUtil.getInstance().controllerBackwards();
+              if (_isForward) return;
+              backwardState(() {
+                _isBackward = true;
+              });
+            },
+            onLongPressEnd: (details) {
+              LogUtil.d('onLongPressEnd');
+              BlueToothUtil.getInstance().controllerCardStop();
+              backwardState(() {
+                _isBackward = false;
+              });
+            },
+          );
+        })),
         SizedBox(
           height: 69.dp,
         ),

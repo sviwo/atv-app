@@ -178,7 +178,8 @@ class _SafetyInfoPageState
                           return;
                         }
                         viewModel.getShareCarKey((isSuccess, {carKey}) async {
-                          await Clipboard.setData(ClipboardData(text: carKey));
+                          await Clipboard.setData(
+                              ClipboardData(text: carKey ?? ''));
                           LWToast.show(LocaleKeys.car_key_get_success.tr(),
                               duration: 3000);
                         });
@@ -254,7 +255,8 @@ class _SafetyInfoPageState
                           return;
                         }
                         viewModel.getShareCarKey((isSuccess, {carKey}) async {
-                          await Clipboard.setData(ClipboardData(text: carKey));
+                          await Clipboard.setData(
+                              ClipboardData(text: carKey ?? ''));
                           LWToast.show(LocaleKeys.car_key_get_success.tr(),
                               duration: 3000);
                         });
@@ -330,7 +332,8 @@ class _SafetyInfoPageState
                           return;
                         }
                         viewModel.getShareCarKey((isSuccess, {carKey}) async {
-                          await Clipboard.setData(ClipboardData(text: carKey));
+                          await Clipboard.setData(
+                              ClipboardData(text: carKey ?? ''));
                           LWToast.show(LocaleKeys.car_key_get_success.tr(),
                               duration: 3000);
                         });

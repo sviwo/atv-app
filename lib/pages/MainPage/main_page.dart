@@ -54,6 +54,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () async {
             LogUtil.d('点击了扫码');
+            // pagePush(AppRoute.remoteControl);
+            // return;
 
             pagePush(AppRoute.scanQrCodePage, callback: (data) {
               if (data != null && data is Map<String, dynamic>) {

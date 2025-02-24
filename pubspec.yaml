@@ -40,7 +40,7 @@ dependencies:
 
   pull_to_refresh: ^2.0.0
 
-  sentry_flutter: 7.13.2 # 性能&BUG监听
+  # sentry_flutter: 7.13.2 # 性能&BUG监听
 
   image_picker: 0.8.6 # 图片选择
   image_cropper: 3.0.2 # 图片裁减，配合image_picker使用
@@ -50,7 +50,7 @@ dependencies:
 
   scrollable_positioned_list: ^0.2.2 #滚动到列表中指定item
 
-  intl: ^0.17.0
+  intl: ^0.19.0
   flutter_svg: 1.0.3 # SVG图片
   linked_scroll_controller: ^0.2.0 #同步滚动controller
   sprintf: ^7.0.0 # 字符串格式化
@@ -115,7 +115,7 @@ dev_dependencies:
   json_serializable: 6.6.2
   build_runner: 2.3.3
   #  test: 1.22.0
-  mockito: 5.4.0
+  mockito: ^5.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

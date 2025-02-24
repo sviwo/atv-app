@@ -111,7 +111,7 @@ class MinePageViewModel extends BaseViewModel {
       // await LWLoading.dismiss(animation: false);
 
       userInfo = res.first.data as UserBasicInfo?;
-      vehicleList = res[1].data as List<VehicleListModel>;
+      vehicleList = (res[1].data as List<VehicleListModel>?) ?? [];
 
       pageRefresh();
 
@@ -151,9 +151,9 @@ class MinePageViewModel extends BaseViewModel {
         ApiVehicle.unbindCar(),
         handlePageState: false,
         showLoading: true,
-        voidSuccess: () async{
+        voidSuccess: () async {
           //: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
-          await  BlueToothUtil.getInstance().onDisconnectPressed();
+          await BlueToothUtil.getInstance().onDisconnectPressed();
           EventManager.post(AppEvent.vehicleInfoChange);
         },
       );
@@ -172,7 +172,6 @@ class MinePageViewModel extends BaseViewModel {
       },
     );
   }
-  
 
   changeCar(VehicleListModel carModel) {
     if (StringUtils.isNullOrEmpty(carModel.deviceId) == false) {
@@ -182,7 +181,7 @@ class MinePageViewModel extends BaseViewModel {
           ApiVehicle.changeSelectVehicle(carModel.deviceId ?? ''),
           handlePageState: false,
           showLoading: true,
-          voidSuccess: () async{
+          voidSuccess: () async {
             //: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
             await BlueToothUtil.getInstance().onDisconnectPressed();
             EventManager.post(AppEvent.vehicleInfoChange);

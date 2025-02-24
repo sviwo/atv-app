@@ -22,7 +22,9 @@ class _LWKeepAliveState extends State<LWKeepAlive>
     super.build(context);
     return widget.borderRadius == null
         ? widget.child
-        : ClipRRect(borderRadius: widget.borderRadius, child: widget.child);
+        : ClipRRect(
+            borderRadius: widget.borderRadius ?? BorderRadius.zero,
+            child: widget.child);
   }
 
   @override
