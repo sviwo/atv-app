@@ -134,7 +134,8 @@ class _MinePageState
                 child: Swiper(
                   itemCount: viewModel.vehicleList.length,
                   index: 0,
-                  loop: viewModel.vehicleList.length > 1 ? true : false,
+                  // loop: viewModel.vehicleList.length > 1 ? true : false,
+                  loop: false,
                   itemBuilder: (context, index) {
                     VehicleListModel model = viewModel.vehicleList[index];
                     return Column(
@@ -326,6 +327,7 @@ class _MinePageState
                     } else if (itemName ==
                         LocaleKeys.authentication_center.tr()) {
                       // 认证中心
+                      pagePush(AppRoute.authenticationCenter);
                       if (viewModel.userInfo?.authStatus == 0 ||
                           viewModel.userInfo?.authStatus == 3) {
                         pagePush(AppRoute.authenticationCenter);

@@ -41,6 +41,36 @@ class _RemoteControlPageState
     BlueToothUtil.getInstance().initPage();
   }
 
+  tt() {
+    Center(child: StatefulBuilder(builder: (context, forwardState) {
+      return GestureDetector(
+        child: Image.asset(
+          AppIcons.imgRemoteControlForwad,
+          width: 266.dp,
+          height: 120.dp,
+          color: _isForward ? Colors.white.withOpacity(0.5) : null,
+          colorBlendMode: BlendMode.dstIn,
+        ),
+        onLongPress: () {
+          LogUtil.d('长按了向前');
+          if (_isBackward) return;
+          //: 蓝牙控制向前
+          BlueToothUtil.getInstance().controllerForward();
+          forwardState(() {
+            _isForward = true;
+          });
+        },
+        onLongPressEnd: (details) {
+          LogUtil.d('onLongPressEnd');
+          BlueToothUtil.getInstance().controllerCardStop();
+          forwardState(() {
+            _isForward = false;
+          });
+        },
+      );
+    }));
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -126,7 +156,6 @@ class _RemoteControlPageState
                           height: 8.dp,
                         ),
                         //: 剩余电量，从设备获取
-                        // BlueToothUtil.getInstance().getBattery(),
                         '${model.battery}',
                         '%',
                         LocaleKeys.remaining_battery.tr()),
@@ -137,7 +166,6 @@ class _RemoteControlPageState
                           height: 15.3.dp,
                         ),
                         //: 运行速度，从设备获取
-                        // BlueToothUtil.getInstance().getSpeed(),
                         '${model.carSpeed}',
                         'km/h',
                         LocaleKeys.speed.tr()),
@@ -260,7 +288,6 @@ class _RemoteControlPageState
                       });
                       LogUtil.d('点击了喇叭图标');
                       //: 蓝牙控制喇叭
-                      // viewModel.controlVehicle(1);
                       BlueToothUtil.getInstance().controllerBlueVoice();
                     },
                     icon: Image.asset(
@@ -282,7 +309,6 @@ class _RemoteControlPageState
                       });
                       LogUtil.d('点击了灯光图标');
                       //: 蓝牙控制灯光
-                      // viewModel.controlVehicle(0);
                       BlueToothUtil.getInstance().controllerBlueLight();
                     },
                     icon: Image.asset(

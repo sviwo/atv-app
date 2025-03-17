@@ -57,6 +57,21 @@ class _EnergyModelPageState
     );
   }
 
+  tt() {
+    // 判断手机蓝牙是否打开
+    var isBluetoothOpen = BlueToothUtil.getInstance().blueToothIsOpen();
+    //: 判断蓝牙是否已经连接了车辆
+    var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
+    if (isBluetoothOpen && isConnectBluetooth) {
+      //: 控制ECO模式的开启与关闭 value true：开启  false：关闭
+      BlueToothUtil.getInstance().modelSwitch(0, successBlock: () {
+        viewModel.changeDriveMode(0);
+      });
+    } else {
+      viewModel.changeDriveMode(0);
+    }
+  }
+
   Widget _buildEcoModel() {
     return SizedBox(
       height: 80.dp,

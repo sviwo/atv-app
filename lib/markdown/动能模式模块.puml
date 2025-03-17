@@ -1,0 +1,51 @@
+@startuml
+start
+:用户点击动能模式选项卡;
+partition 连接校验 {
+  if (蓝牙已连接?) then (否)
+    :触发蓝牙自动连接流程;
+    if (连接失败?) then (是)
+      :直接返回;
+      stop
+    endif
+  else (是)
+    :保持当前连接;
+  endif
+}
+
+partition 模式操作 {
+  :展示当前模式状态;
+  if (用户选择新模式) then (ECO/运动/狂暴)
+    :生成模式指令代码;
+    fork
+      :通过蓝牙发送模式指令;
+    fork again
+      :调用后台接口保存设置;
+    end fork
+    if (蓝牙发送成功? && 后台保存成功?) then (是)
+      :更新本地模式状态;
+    else (否)
+      :显示"模式切换失败";
+      :恢复原模式显示;
+    endif
+  endif
+}
+
+partition 动能回收调节 {
+  :进入强度调节界面;
+  :拖动滑块选择强度值(无/中/强);
+    fork
+      :通过蓝牙发送强度参数;
+    fork again
+      :调用后台更新阈值;
+    end fork
+    if (操作成功?) then (是)
+      :刷新本地数据;
+    else (否)
+      :显示"调节未生效"警告;
+      :恢复前置强度;
+    endif
+}
+stop
+
+@enduml

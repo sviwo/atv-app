@@ -251,13 +251,12 @@ class BlueToothUtil {
     // 扫描蓝牙
     startScanBlueTooth();
 
-    Future.delayed(Duration(seconds: 5),(){
-        if (!communicationSuccess && failureBlockT != null) {
-          failureBlockT!();
-        }
-        LWLoading.dismiss();
+    Future.delayed(Duration(seconds: 5), () {
+      if (!communicationSuccess && failureBlockT != null) {
+        failureBlockT!();
       }
-    );
+      LWLoading.dismiss();
+    });
   }
 
   /// 获取搜索蓝牙列表
@@ -267,7 +266,7 @@ class BlueToothUtil {
   /// 控制蓝牙解锁
   void controllerBlueUnLock(int value, {Function? successBlock}) {
     sendData.add(sendPackToBluetooth46(lockCarStatus: value));
-    if(successBlock != null){
+    if (successBlock != null) {
       successBlock();
     }
   }
@@ -275,7 +274,7 @@ class BlueToothUtil {
   // 动能切换模式 1-3 ECO、运动、狂暴     2024年9月7日16:47:23  苟总： 协议改为了1-3  之前是 0-2
   void modelSwitch(int value, {Function? successBlock}) {
     sendData.add(sendPackToBluetooth46(sportStatus: value + 1));
-    if(successBlock != null){
+    if (successBlock != null) {
       successBlock();
     }
   }
@@ -283,7 +282,7 @@ class BlueToothUtil {
   // 动能回收
   void sportRecycle(int value, {Function? successBlock}) {
     sendData.add(sendPackToBluetooth46(sportRecycle: value));
-    if(successBlock != null){
+    if (successBlock != null) {
       successBlock();
     }
   }
@@ -319,12 +318,12 @@ class BlueToothUtil {
   }
 
   /// 进入页面发送 苟总:不管其他的，  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
-  void initPage(){
+  void initPage() {
     sendData.add(sendBluePageInitAndMove(1));
   }
 
   /// 离开页面发送 苟总: 不管其他的，  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
-  void movePage(){
+  void movePage() {
     sendData.add(sendBluePageInitAndMove(0));
   }
 
@@ -332,7 +331,6 @@ class BlueToothUtil {
   void controllerForward() {
     sendData.add(sendPackToBluetooth46(carStatus: 1));
   }
-
 
   /// 停止
   void controllerCardStop() {
@@ -404,10 +402,7 @@ class BlueToothUtil {
     _scanResultsSubscription ??=
         FlutterBluePlus.scanResults.asBroadcastStream().listen((results) {
       _scanResults = results;
-      // LogUtil.d("$TAG搜索结果:${results}");
-      // device.platformName 蓝牙名称
-      // device.remoteId.str 蓝牙mac
-      if (_scanResults != null && _scanResults.isNotEmpty) {
+      if (_scanResults.isNotEmpty) {
         for (int i = 0; i < _scanResults.length; i++) {
           if (_scanResults[i].device.platformName.isNotEmpty) {
             //LogUtil.d("$TAG ${_scanResults[i].device.platformName}");
@@ -793,6 +788,16 @@ class BlueToothUtil {
     }
   }
 
+  tt() {
+    // 发送车架号
+    if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+      List<List<int>> mList = getPackToBluetoothCarNumber2_4(deviceName!);
+      for (int i = 0; i < mList.length; i++) {
+        sendData.add(mList[i]);
+      }
+    }
+  }
+
   /// app 发送个i蓝牙的心跳包
   List<int> sendPackToBluetoothHeart(int index) {
     List<int> sendPack = List.filled(17, 0);
@@ -888,10 +893,7 @@ class BlueToothUtil {
           sendData.add(mList[i]);
         }
       }
-
-      // blueAcceptDataListener?.acceptBlueToothData(true, 4);
     } else {
-      // blueAcceptDataListener?.acceptBlueToothData(false, 4);
       LogUtil.d("$TAG 产品名称:接收失败！");
       // 发送车架号
       if (deviceName != null && !deviceName!.isNullOrEmpty()) {
@@ -996,10 +998,8 @@ class BlueToothUtil {
       LogUtil.d("$TAG URL接收成功！");
       List<int> activity = getPackToBluetoothActivities33();
       sendData.add(activity);
-      // blueAcceptDataListener?.acceptBlueToothData(true, 32);
     } else {
       LogUtil.d("$TAG URL接收失败！");
-      // blueAcceptDataListener?.acceptBlueToothData(false, 32);
       if (blueConnectInfo != null &&
           blueConnectInfo!.mqttHostUrl != null &&
           !blueConnectInfo!.mqttHostUrl.isNullOrEmpty()) {
@@ -1040,11 +1040,6 @@ class BlueToothUtil {
     List<int> key = dataList.sublist(12, 16);
     keyString = DataExchangeUtils.fourByteListToInt(key);
     LogUtil.d("$TAG 激活成功！,key33=$keyString");
-    // blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
-
-    // 没有simid 如果蓝牙传了，则下面代码 注释调
-    //simID = "0000000000000000000";
-    //notifyDeviceRegistSuccess();
   }
 
   /// 解析蓝牙发送过来的数据  消息类型34
@@ -1108,16 +1103,6 @@ class BlueToothUtil {
 
     blueDataVO.chargeConnect = chargeConnect;
     receiveController.add(blueDataVO);
-
-    //   LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
-    //       "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
-    //       "alarmContinue:$alarmContinue "
-    //       "deviceDefaultAlarm:$deviceDefaultAlarm \n "
-    //       "carTemperatureHigh:$carTemperatureHigh "
-    //       "chargeConnect:$chargeConnect lowPower:$lowPower \n "
-    //       "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
-    //       "leftLightFlash:$leftLightFlash \n "
-    //       "rightLightFlash:$rightLightFlash");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -1138,8 +1123,6 @@ class BlueToothUtil {
     pushModelBean?.items.VehSpeed.time =
         DataExchangeUtils.fourBytesToInt(dataList.sublist(4, 8)).toString();
     pushModelBean?.items.VehSpeed.value = carSpeed.toString();
-
-    // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型38
@@ -1180,12 +1163,6 @@ class BlueToothUtil {
     pushModelBean?.items.Electricity.time =
         DataExchangeUtils.fourBytesToInt(dataList.sublist(4, 8)).toString();
     pushModelBean?.items.Electricity.value = battery.toString();
-
-    // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
-    //     "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
-    //     "lackOfPowerStatus:$lackOfPowerStatus readyStatus:$readyStatus \n "
-    //     "dischargeContactorStatus:$dischargeContactorStatus chargingContactorStatus:$chargingContactorStatus batteryDefaultLeve:$batteryDefaultLeve bmsCode:$bmsCode");
-    //
   }
 
   /// 解析蓝牙发送过来的数据  消息类型39
@@ -1257,9 +1234,6 @@ class BlueToothUtil {
 
   /// 获取 发送车架号 的 数据包 产品名称
   List<List<int>> getPackToBluetoothCarNumber2_4(String cardNumberString) {
-    // if (cardNumberString.length != 20) {
-    //   throw ArgumentError("cardNumberString length must is 20");
-    // }
 
     List<List<int>> mList = [];
     List<int> dataArray = utf8.encode(cardNumberString);
@@ -1601,8 +1575,6 @@ class BlueToothUtil {
     return sendPack;
   }
 
-
-
   /// 蓝牙控制界面， 进入页面和退出界面发送的数据  carStatus 1 进入页面，0退出页面
   ///  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
   List<int> sendBluePageInitAndMove(int carStatus) {
@@ -1620,9 +1592,9 @@ class BlueToothUtil {
     sendPack[position++] = (second >> 8) & 0xff;
     sendPack[position++] = second & 0xff;
 
-    if(carStatus == 1){
+    if (carStatus == 1) {
       sendPack[15] = (sendPack[15] | 0x82) & 0xff;
-    }else{
+    } else {
       sendPack[15] = (sendPack[15] | 0x80) & 0xff;
     }
 
@@ -1633,12 +1605,6 @@ class BlueToothUtil {
 
     return sendPack;
   }
-
-
-
-
-
-
 
   /// lockCarStatus lockCarStatus 锁车状态 0没关机、1开机
   /// setLock 设防 0关闭、1开启

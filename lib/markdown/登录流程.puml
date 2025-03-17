@@ -1,0 +1,71 @@
+@startuml
+start
+:用户打开APP;
+if (选择操作) then
+  -> 已有账号;
+  :进入登录流程;
+  if (登录方式) then
+    -> 邮箱密码登录;
+    :输入邮箱;
+    :输入密码;
+    if (验证通过?) then (是)
+      :进入主界面;
+      stop
+    else (否)
+      :提示错误;
+      detach
+    endif
+  elseif (Facebook登录) then
+    -> 跳转Facebook授权页面;
+    if (授权成功?) then (是)
+      :获取用户令牌;
+      :自动登录;
+      :进入主界面;
+      stop
+    else (否)
+      :提示授权失败;
+      detach
+    endif
+  elseif (Apple登录) then
+    -> 跳转Apple授权页面;
+    if (授权成功?) then (是)
+      :获取用户令牌;
+      :自动登录;
+      :进入主界面;
+      stop
+    else (否)
+      :提示授权失败;
+      detach
+    endif
+  endif
+elseif (新用户) then
+  -> 进入注册流程;
+  :输入邮箱;
+  :设置密码;
+  :发送邮箱验证码;
+  :输入验证码;
+  if (验证码正确?) then (是)
+    :注册成功;
+    :自动登录;
+    :进入主界面;
+    stop
+  else (否)
+    :提示验证码错误;
+    detach
+  endif
+elseif (忘记密码) then
+  -> 进入忘记密码流程;
+  :输入注册邮箱;
+  :发送重置链接;
+  :用户查收邮件;
+  :点击重置链接;
+  :输入新密码;
+  if (提交成功?) then (是)
+    :跳转登录页面;
+    stop
+  else (否)
+    :提示密码格式错误;
+    detach
+  endif
+endif
+@enduml

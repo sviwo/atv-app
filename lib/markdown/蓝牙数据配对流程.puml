@@ -1,0 +1,56 @@
+@startuml
+start
+:用户点击蓝牙连接按钮;
+partition 蓝牙配对流程 {
+  if (是否已配对？) then (否)
+    :启用蓝牙扫描;
+    :发现附近三轮车设备;
+    :选择目标设备;
+    :发起配对请求;
+    if (配对成功？) then (是)
+      :保存设备MAC地址;
+    else (否)
+      :显示"配对失败"提示;
+      :允许用户重试;
+      detach
+    endif
+  else (是)
+    :读取已保存设备信息;
+  endif
+}
+
+partition 自动连接管理 {
+  :尝试建立蓝牙连接;
+  if (连接成功？) then (是)
+    :标记连接状态为活跃;
+  else (否)
+    :触发自动重连机制;
+    repeat
+      :间隔5秒重试连接;
+      if (重试次数 > 3) then (是)
+        :显示"连接超时"提示;
+        break
+      endif
+    repeat while (连接未成功?)
+  endif
+}
+
+partition 数据传输协议 {
+  :组装自定义数据帧;
+
+  while (持续通信?) is (是)
+    :通过蓝牙发送数据帧;
+    :等待接收响应帧;
+    if (CRC校验通过?) then (是)
+      :解析响应数据;
+      :更新本地设备状态;
+    else (否)
+      :记录错误日志;
+      :触发数据重发机制;
+    endif
+  endwhile
+}
+
+:返回通信结果;
+stop
+@enduml

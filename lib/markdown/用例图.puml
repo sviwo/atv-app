@@ -1,0 +1,90 @@
+@startuml
+left to right direction
+actor 用户 as u1
+rectangle 地图模块 {
+usecase 查看车辆位置 as c11
+usecase 进行导航 as c12
+}
+
+usecase 查看车辆实时状态 as c1
+usecase 车辆控制 as c2
+rectangle 控制{
+    usecase 控制前进 as c21
+    usecase 控制后退 as c22
+    usecase 控制车灯 as c23
+    usecase 车锁控制 as c24
+    usecase 控制喇叭 as c25
+}
+c2<|-----c21
+c2<|-----c22
+c2<|-----c23
+c2<|-----c24
+c2<|-----c25
+usecase 车辆管理 as c3
+rectangle 多车辆{
+    usecase 查看车辆信息 as c31
+    usecase 切换车辆 as c32
+    usecase 绑定车辆 as c33
+    usecase 移除车辆 as c34
+}
+c3<|-----c31
+c3<|-----c32
+c3<|-----c33
+c3<|-----c34
+usecase 车钥匙管理 as c4
+rectangle 车钥匙{
+    usecase 分享车钥匙 as c41
+    usecase 复制到粘贴板 as c411
+    usecase 移除车钥匙 as c42
+    usecase 打开关闭车钥匙分享 as c43
+}
+c4<|-----c41
+c4<|-----c42
+c4<|-----c43
+c411<.c41 : include
+usecase 用户管理 as c5
+rectangle 用户{
+    usecase 查看用户信息 as c51
+    usecase 编辑用户信息 as c52
+    usecase 实名认证 as c53
+}
+c5<|-----c51
+c5<|-----c52
+c5<|-----c53
+usecase 登录 as c6
+rectangle 登录{
+    usecase 账号密码登录 as c61
+    usecase 苹果登录 as c62
+    usecase facebook登录 as c63
+    usecase 注册 as c64
+    usecase 忘记密码 as c65
+}
+c6<|-----c61
+c6<|-----c62
+c6<|-----c63
+
+c6<.c64 : extends
+c6<.c65 : extends
+
+usecase 升级 as c7
+rectangle 升级版块{
+    usecase OTA升级 as c71
+    usecase APP升级 as c72
+}
+c7<|-----c71
+c7<|-----c72
+
+u1-->c1
+u1-->c2
+u1-->c3
+u1-->c4
+u1-->c5
+u1-->c6
+u1-->c7
+u1-->c11
+u1-->c12
+
+
+
+
+@enduml

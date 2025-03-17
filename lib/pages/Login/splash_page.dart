@@ -19,14 +19,17 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
   @override
   void initState() {
     super.initState();
-    AppConf.loginSuccess().then((value) {
-      LogUtil.d('登录状态为$value');
-      if (value) {
-        pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
-      } else {
-        pagePush(AppRoute.loginMain, needReplace: true, fullscreenDialog: true);
-      }
+    Future.delayed(Duration(seconds: 0), () {
+      pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
     });
+    // AppConf.loginSuccess().then((value) {
+    //   LogUtil.d('登录状态为$value');
+    //   if (value) {
+    //     pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+    //   } else {
+    //     pagePush(AppRoute.loginMain, needReplace: true, fullscreenDialog: true);
+    //   }
+    // });
   }
 
   @override

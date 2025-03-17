@@ -22,7 +22,8 @@ import 'archs/lw_arch.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class TestInheritedWidget extends InheritedWidget {
-  const TestInheritedWidget({super.key, required this.child}) : super(child: child);
+  const TestInheritedWidget({super.key, required this.child})
+      : super(child: child);
 
   final Widget child;
 

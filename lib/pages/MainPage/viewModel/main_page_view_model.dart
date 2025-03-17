@@ -54,9 +54,9 @@ class MainPageViewModel extends BaseViewModel {
     await signalRequestData(
       completion: () {
         try {
-          if (timer == null || timer?.isActive == false) {
-            requestData();
-          }
+          // if (timer == null || timer?.isActive == false) {
+          //   requestData();
+          // }
         } catch (e) {
           LogUtil.d(e.toString());
         }

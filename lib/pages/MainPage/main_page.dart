@@ -174,9 +174,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
 
   @override
   void readFromClipboard() async {
-    LogUtil.d('----------粘贴板回调');
     var copyIsString = await Clipboard.hasStrings();
-    LogUtil.d('----------粘贴板中是否字符串:$copyIsString');
     if (copyIsString) {
       ClipboardData? newClipboardData =
           await Clipboard.getData(Clipboard.kTextPlain);
@@ -191,16 +189,13 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             return;
           }
           viewModel.clipboardText = resultText;
-          // await Clipboard.setData(ClipboardData(text: ' '));
           viewModel.inviteBindVehicle(resultText, (isSuccess) {
             if (isSuccess) {
               LWToast.show(LocaleKeys.car_key_bind_success.tr());
-              // viewModel.clipboardText = '';
+              viewModel.clipboardText = '';
               if (viewModel.haveCar == false) {
                 // 没有车就要去拉数据 延迟两秒 让toast展示一会儿
                 Future.delayed(const Duration(seconds: 2), () {
-                  LogUtil.d("------------clipboardText");
-
                   viewModel.loadData();
                 });
               }
@@ -214,177 +209,182 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
   @override
   Widget buildBody(BuildContext context) {
     List<Widget> list = [];
-    if (viewModel.haveCar == false) {
-      list.addAll(_buildNoCar());
-    } else {
-      list.addAll([
-        SizedBox(
-          height: 30.dp,
+    // if (viewModel.haveCar == false) {
+    //   list.addAll(_buildNoCar());
+    // } else {
+    list.addAll([
+      SizedBox(
+        height: 30.dp,
+      ),
+      _buildCar(),
+      Visibility(
+          visible: (viewModel.dataModel?.batteryStatus ?? false) &&
+              ((viewModel.dataModel?.electricity ?? 0) > 0),
+          child: SizedBox(
+            height: 28.dp,
+          )),
+      Visibility(
+          visible: (viewModel.dataModel?.batteryStatus ?? false) &&
+              ((viewModel.dataModel?.electricity ?? 0) > 0),
+          child: _buildCarStatus()),
+      SizedBox(
+        height: 30.dp,
+      ),
+      _buildControlIcons(),
+      SizedBox(
+        height: 32.dp,
+      ),
+      _buildItem(
+        LocaleKeys.remote_control,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageRemoteControlIcon,
+          width: 21.5.dp,
+          height: 21.5.dp,
         ),
-        _buildCar(),
-        Visibility(
-            visible: (viewModel.dataModel?.batteryStatus ?? false) &&
-                ((viewModel.dataModel?.electricity ?? 0) > 0),
-            child: SizedBox(
-              height: 28.dp,
-            )),
-        Visibility(
-            visible: (viewModel.dataModel?.batteryStatus ?? false) &&
-                ((viewModel.dataModel?.electricity ?? 0) > 0),
-            child: _buildCarStatus()),
-        SizedBox(
-          height: 30.dp,
-        ),
-        _buildControlIcons(),
-        SizedBox(
-          height: 32.dp,
-        ),
-        _buildItem(
-          LocaleKeys.remote_control,
-          null,
-          Image.asset(
-            AppIcons.imgMainPageRemoteControlIcon,
-            width: 21.5.dp,
-            height: 21.5.dp,
-          ),
-          callback: () {
-            if (viewModel.dataModel?.authStatus == 2) {
-              // 判断手机蓝牙是否打开
-              var isBluetoothOpen =
-                  BlueToothUtil.getInstance().blueToothIsOpen();
+        callback: () {
+          pagePush(AppRoute.remoteControl);
+          if (viewModel.dataModel?.authStatus == 2) {
+            // 判断手机蓝牙是否打开
+            var isBluetoothOpen = BlueToothUtil.getInstance().blueToothIsOpen();
 
-              if (!isBluetoothOpen) {
-                return;
-              }
+            if (!isBluetoothOpen) {
+              return;
+            }
 
-              //: 判断蓝牙是否已经连接了车辆
-              var isConnectBluetooth =
-                  // BlueTest.getInstance().getBlueConnectStatus();
-                  BlueToothUtil.getInstance().getBlueConnectStatus();
-              if (isConnectBluetooth) {
-                //跳转到控制器页面
-                pagePush(AppRoute.remoteControl);
-              } else {
-                //: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
-                var bluetoothAddress =
-                    viewModel.dataModel?.bluetoothAddress ?? '';
-                var bluetoothSecrectKey =
-                    viewModel.dataModel?.bluetoothSecretKey ?? '';
-                BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,
-                    bluetoothSecrectKey, viewModel.dataModel?.productKey,
-                    successBlock: () => pagePush(AppRoute.remoteControl));
-              }
-            } else if (viewModel.dataModel?.authStatus == 0 ||
-                viewModel.dataModel?.authStatus == 3) {
-              LWToast.show(
-                LocaleKeys.authentication_not_tips.tr(),
-                duration: 3000,
-                whenComplete: () {
-                  pagePush(AppRoute.authenticationCenter);
-                },
-              );
-            } else if (viewModel.dataModel?.authStatus == 1) {
-              LWToast.show(LocaleKeys.inAuthenticate.tr());
+            //: 判断蓝牙是否已经连接了车辆
+            var isConnectBluetooth =
+                // BlueTest.getInstance().getBlueConnectStatus();
+                BlueToothUtil.getInstance().getBlueConnectStatus();
+            if (isConnectBluetooth) {
+              //跳转到控制器页面
+              pagePush(AppRoute.remoteControl);
+            } else {
+              //: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
+              var bluetoothAddress =
+                  viewModel.dataModel?.bluetoothAddress ?? '';
+              var bluetoothSecrectKey =
+                  viewModel.dataModel?.bluetoothSecretKey ?? '';
+              BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,
+                  bluetoothSecrectKey, viewModel.dataModel?.productKey,
+                  successBlock: () => pagePush(AppRoute.remoteControl));
             }
-          },
-        ),
-        _buildItem(
-          LocaleKeys.kinetic_energy_model,
-          null,
-          Image.asset(
-            AppIcons.imgMainPageLightningIcon,
-            width: 15.5.dp,
-            height: 24.5.dp,
-          ),
-          callback: () {
-            if (viewModel.dataModel?.authStatus == 2) {
-              pagePush(AppRoute.energyModel,
-                  params: {'home': viewModel.dataModel?.toJson()});
-            } else if (viewModel.dataModel?.authStatus == 0 ||
-                viewModel.dataModel?.authStatus == 3) {
-              LWToast.show(
-                LocaleKeys.authentication_not_tips.tr(),
-                duration: 3000,
-                whenComplete: () {
-                  pagePush(AppRoute.authenticationCenter);
-                },
-              );
-            } else if (viewModel.dataModel?.authStatus == 1) {
-              LWToast.show(LocaleKeys.inAuthenticate.tr());
-            }
-          },
-        ),
-        _buildLocationItem(),
-        _buildItem(
-          LocaleKeys.trip_recorder,
-          null,
-          Image.asset(
-            AppIcons.imgMainPageLocationIcon,
-            width: 18.dp,
-            height: 24.dp,
-          ),
-          callback: () {
-            pagePush(AppRoute.tripRecorder);
-          },
-        ),
-        _buildVehicleConditionInformationItem(),
-        Visibility(
-            visible: viewModel.isOwnerCar,
-            child: _buildItem(
-              LocaleKeys.safety,
-              null,
-              Image.asset(
-                AppIcons.imgMainPageSafeIcon,
-                width: 20.5.dp,
-                height: 20.5.dp,
-              ),
-              callback: () {
-                if (viewModel.dataModel?.authStatus == 2) {
-                  pagePush(AppRoute.safetyInfo);
-                } else if (viewModel.dataModel?.authStatus == 0 ||
-                    viewModel.dataModel?.authStatus == 3) {
-                  LWToast.show(
-                    LocaleKeys.authentication_not_tips.tr(),
-                    duration: 3000,
-                    whenComplete: () {
-                      pagePush(AppRoute.authenticationCenter);
-                    },
-                  );
-                } else if (viewModel.dataModel?.authStatus == 1) {
-                  LWToast.show(LocaleKeys.inAuthenticate.tr());
-                }
+          } else if (viewModel.dataModel?.authStatus == 0 ||
+              viewModel.dataModel?.authStatus == 3) {
+            LWToast.show(
+              LocaleKeys.authentication_not_tips.tr(),
+              duration: 3000,
+              whenComplete: () {
+                pagePush(AppRoute.authenticationCenter);
               },
-            )),
-        _buildItem(
-          LocaleKeys.service,
-          null,
-          Image.asset(
-            AppIcons.imgMainPageServiceIcon,
-            width: 19.dp,
-            height: 19.dp,
-          ),
-          callback: () {
-            pagePush(AppRoute.serviceInfo,
-                params: {'servicePhone': viewModel.dataModel?.servicePhone});
-          },
+            );
+          } else if (viewModel.dataModel?.authStatus == 1) {
+            LWToast.show(LocaleKeys.inAuthenticate.tr());
+          }
+        },
+      ),
+      _buildItem(
+        LocaleKeys.kinetic_energy_model,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageLightningIcon,
+          width: 15.5.dp,
+          height: 24.5.dp,
         ),
-        _buildItem(
-          LocaleKeys.upgrade,
-          null,
-          Image.asset(
-            AppIcons.imgMainPageUpgrade,
-            width: 21.dp,
-            height: 21.dp,
-          ),
-          callback: () {
-            pagePush(AppRoute.upgradeInfo);
-          },
+        callback: () {
+          pagePush(AppRoute.energyModel, params: {
+            'home': {'drivingMode': 1, 'energyRecoveryType': 2}
+          });
+          if (viewModel.dataModel?.authStatus == 2) {
+            pagePush(AppRoute.energyModel,
+                params: {'home': viewModel.dataModel?.toJson()});
+          } else if (viewModel.dataModel?.authStatus == 0 ||
+              viewModel.dataModel?.authStatus == 3) {
+            LWToast.show(
+              LocaleKeys.authentication_not_tips.tr(),
+              duration: 3000,
+              whenComplete: () {
+                pagePush(AppRoute.authenticationCenter);
+              },
+            );
+          } else if (viewModel.dataModel?.authStatus == 1) {
+            LWToast.show(LocaleKeys.inAuthenticate.tr());
+          }
+        },
+      ),
+      _buildLocationItem(),
+      _buildItem(
+        LocaleKeys.trip_recorder,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageLocationIcon,
+          width: 18.dp,
+          height: 24.dp,
         ),
-        SizedBox(
-          height: bottomBarHeight,
-        )
-      ]);
-    }
+        callback: () {
+          pagePush(AppRoute.tripRecorder);
+        },
+      ),
+      _buildVehicleConditionInformationItem(),
+      Visibility(
+          // visible: viewModel.isOwnerCar,
+          visible: true,
+          child: _buildItem(
+            LocaleKeys.safety,
+            null,
+            Image.asset(
+              AppIcons.imgMainPageSafeIcon,
+              width: 20.5.dp,
+              height: 20.5.dp,
+            ),
+            callback: () {
+              pagePush(AppRoute.safetyInfo);
+              if (viewModel.dataModel?.authStatus == 2) {
+                pagePush(AppRoute.safetyInfo);
+              } else if (viewModel.dataModel?.authStatus == 0 ||
+                  viewModel.dataModel?.authStatus == 3) {
+                LWToast.show(
+                  LocaleKeys.authentication_not_tips.tr(),
+                  duration: 3000,
+                  whenComplete: () {
+                    pagePush(AppRoute.authenticationCenter);
+                  },
+                );
+              } else if (viewModel.dataModel?.authStatus == 1) {
+                LWToast.show(LocaleKeys.inAuthenticate.tr());
+              }
+            },
+          )),
+      _buildItem(
+        LocaleKeys.service,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageServiceIcon,
+          width: 19.dp,
+          height: 19.dp,
+        ),
+        callback: () {
+          pagePush(AppRoute.serviceInfo,
+              params: {'servicePhone': viewModel.dataModel?.servicePhone});
+        },
+      ),
+      _buildItem(
+        LocaleKeys.upgrade,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageUpgrade,
+          width: 21.dp,
+          height: 21.dp,
+        ),
+        callback: () {
+          pagePush(AppRoute.upgradeInfo);
+        },
+      ),
+      SizedBox(
+        height: bottomBarHeight,
+      )
+    ]);
+    // }
 
     return ListView(
       // physics: const NeverScrollableScrollPhysics(),

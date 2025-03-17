@@ -57,12 +57,11 @@ class _SafetyInfoPageState
         ),
         _buildLockRow(),
         Visibility(
-            visible: viewModel.mobileKeysIsOn,
+            // visible: viewModel.mobileKeysIsOn,
             child: SizedBox(
-              height: 26.dp,
-            )),
-        Visibility(
-            visible: viewModel.mobileKeysIsOn, child: _buildUploadItems()),
+          height: 26.dp,
+        )),
+        Visibility(visible: true, child: _buildUploadItems()),
         SizedBox(
           height: 50.dp,
         ),

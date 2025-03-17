@@ -37,6 +37,7 @@ class AuthenticationCenterViewModel extends BaseViewModel {
   /// 证件背面
   XFile? certificateBackImgFile;
 
+  //合规判断
   bool get isLegal =>
       (authFirstName.isNullOrEmpty() == false) &&
       (authLastName.isNullOrEmpty() == false) &&
@@ -47,6 +48,7 @@ class AuthenticationCenterViewModel extends BaseViewModel {
     if (isLegal == false) {
       return;
     }
+    //上传实名认证信息
     loadApiData(
       ApiHomePage.submmitUserRealNameInfo(
           authFirstName: authFirstName,

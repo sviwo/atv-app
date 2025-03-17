@@ -1,0 +1,80 @@
+@startuml
+start
+' : 激活包前数据交互;
+partition 蓝牙连接 {
+  :建立蓝牙连接;
+  :同步UTC时间戳;
+}
+
+partition 激活前数据交换阶段 {
+  :APP发送车架号(VIN);
+  repeat :等待0xA3确认码;
+    if (收到0xA3?) then (是)
+      :APP发送蓝牙秘钥;
+    else (否)
+      ->重新发送车架号;
+    endif
+  repeat while (未收到0xA3?) is (否) -> (否)
+
+  repeat :等待0xA3确认码;
+    if (收到0xA3?) then (是)
+      :APP发送DeviceName;
+    else (否)
+      ->重新发送蓝牙秘钥;
+    endif
+  repeat while (未收到0xA3?) is (否) -> (否)
+
+  repeat :等待0xA3确认码;
+    if (收到0xA3?) then (是)
+      :APP发送DeviceSecret;
+    else (否)
+      ->重新发送DeviceName;
+    endif
+  repeat while (未收到0xA3?) is (否) -> (否)
+
+  repeat :等待0xA3确认码;
+    if (收到0xA3?) then (是)
+      :APP发送MQTT URL;
+    else (否)
+      ->重新发送DeviceSecret;
+    endif
+  repeat while (未收到0xA3?) is (否) -> (否)
+}
+: 激活校验流程;
+stop
+
+' partition 激活校验循环 {
+'   repeat :APP发送0x5A激活包;
+'   :车机端返回校验码;
+
+'   if (校验码==0xAF?) then (是)
+'     :握手成功;
+'     :进入蓝牙数据交换;
+'     stop
+'   else (否)
+'     if (bit0错误?) then (是)
+'       #lightblue:重新发送蓝牙秘钥;
+'     endif
+'     if (bit1错误?) then (是)
+'       #lightgreen:重新发送车架号;
+'     endif
+'     if (bit2错误?) then (是)
+'       #pink:重新发送DeviceName;
+'     endif
+'     if (bit3错误?) then (是)
+'       #orange:重新发送DeviceSecret;
+'     endif
+'   endif
+'   repeat while(校验码!=0xAF且相关数据重发成功后)
+'     stop
+' }
+
+' note right of 激活校验循环
+'   错误位重传规则：
+'   █ bit0错误 → 重传秘钥 → 重新发送激活包
+'   █ bit1错误 → 重传车架号 → 重新发送激活包
+'   █ bit2错误 → 重传DeviceName → 重新发送激活包
+'   █ bit3错误 → 重传DeviceSecret → 重新发送激活包
+' end note
+
+@enduml

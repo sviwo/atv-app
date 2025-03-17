@@ -1,0 +1,11 @@
+@startuml
+
+:进入首页;
+:获取首页数据;
+if (账号有车) then(yes)
+    :展示全部选项卡;
+    else(no)
+    :仅展示地点、服务、升级选项卡;
+    endif
+    stop
+@enduml

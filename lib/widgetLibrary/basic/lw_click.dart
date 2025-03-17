@@ -6,10 +6,17 @@ import 'package:flutter/material.dart';
 class LWClick {
   LWClick._();
 
+  tt() {
+    DecoratedBox(
+      decoration: BoxDecoration(color: Colors.amber),
+    );
+  }
+
   /// params:
   ///   - callback 外部回调
   ///   - antiMilliseconds 可重复点击的时间间隔
-  static VoidCallback? onClickAnti({VoidCallback? onTap, int antiMilliseconds = 300}) {
+  static VoidCallback? onClickAnti(
+      {VoidCallback? onTap, int antiMilliseconds = 300}) {
     if (onTap == null) return null;
     Timer? _timer;
     return () {

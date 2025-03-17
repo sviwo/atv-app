@@ -1,0 +1,58 @@
+@startuml
+start
+:用户进入升级模块;
+partition 升级类型选择 {
+  if (选择操作类型) then (车机OTA升级)
+    :点击车机OTA升级按钮;
+    partition 车机升级流程 {
+      :检查车辆状态（车速=0/电量>30%）;
+      if (状态合规?) then (是)
+        :连接云端服务器检查固件版本;
+        if (有新版本?) then (是)
+          :下载固件包;
+          :验证数字签名;
+          if (验证通过?) then (是)
+            :进入Bootloader模式;
+            :烧写新固件;
+            if (烧写成功?) then (是)
+              :重启车机系统;
+              :显示升级成功提示;
+            else (否)
+              :启用恢复分区回滚;
+              :提示"升级失败，已恢复旧版";
+            endif
+          else (否)
+            :删除损坏包;
+            :提示"文件校验失败";
+          endif
+        else (否)
+          :提示"当前已是最新版本";
+        endif
+      else (否)
+        :提示"请停车并保持电量充足";
+      endif
+    }
+  elseif (APP在线更新)
+    :点击APP更新检查;
+    partition APP更新流程 {
+      :iOS访问应用商店接口,Android访问服务器地址;
+      if (有新版本?) then (是)
+        :弹出更新对话框;
+        if (用户确认更新?) then (是)
+          :下载APK/IPA文件;
+          if (校验通过?) then (是)
+            :静默安装或跳转商店;
+            :提示"重启APP生效";
+          else (否)
+            :提示"下载文件损坏";
+          endif
+        endif
+      else (否)
+        :提示"当前已是最新版本";
+      endif
+    }
+  endif
+}
+stop
+
+@enduml
