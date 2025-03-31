@@ -50,7 +50,7 @@ dependencies:
 
   scrollable_positioned_list: ^0.2.2 #滚动到列表中指定item
 
-  intl: ^0.19.0
+  intl: ^0.17.0
   flutter_svg: 1.0.3 # SVG图片
   linked_scroll_controller: ^0.2.0 #同步滚动controller
   sprintf: ^7.0.0 # 字符串格式化
